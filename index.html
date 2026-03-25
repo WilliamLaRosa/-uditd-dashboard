@@ -1,0 +1,822 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Seguimiento Bienes y Servicios · UDITD · INSNSB</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.js"></script>
+<style>
+:root{
+  --bg:#0b0e18;--surf:#141828;--card:#1a1f35;--brd:#252d4a;
+  --txt:#e4e8f5;--mut:#6b7a9e;--acc:#5b8def;
+  --grn:#1dc88a;--amb:#f5a623;--red:#e8455a;--pur:#9b72f5;--tel:#22d4f0;
+  --grn-d:rgba(29,200,138,.1);--amb-d:rgba(245,166,35,.1);
+  --red-d:rgba(232,69,90,.1);--acc-d:rgba(91,141,239,.1);
+  --pur-d:rgba(155,114,245,.1);
+  --sb:230px;--tb:54px;--r:10px;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'Segoe UI',system-ui,sans-serif;background:var(--bg);color:var(--txt);display:flex;min-height:100vh;font-size:13px}
+
+/* ── SIDEBAR ── */
+.sb{width:var(--sb);background:var(--surf);border-right:1px solid var(--brd);display:flex;flex-direction:column;position:fixed;top:0;left:0;height:100vh;z-index:200;transition:transform .25s}
+.sb-logo{padding:20px 18px 16px;border-bottom:1px solid var(--brd)}
+.sb-logo-main{font-size:12px;font-weight:700;color:#fff;letter-spacing:.3px}
+.sb-logo-sub{font-size:10px;color:var(--mut);margin-top:3px;line-height:1.4}
+.sb-nav{flex:1;padding:10px 0;overflow-y:auto}
+.sb-sec{font-size:9px;color:rgba(107,122,158,.4);padding:14px 18px 5px;text-transform:uppercase;letter-spacing:1.2px}
+.ni{display:flex;align-items:center;gap:10px;padding:10px 18px;cursor:pointer;color:var(--mut);font-size:12px;border-left:2px solid transparent;transition:all .15s;user-select:none}
+.ni:hover{background:rgba(255,255,255,.04);color:var(--txt)}
+.ni.on{background:rgba(91,141,239,.1);color:#fff;border-left-color:var(--acc)}
+.ni svg{width:15px;height:15px;flex-shrink:0;opacity:.8}
+.ni.on svg{opacity:1}
+.ni-tag{margin-left:auto;font-size:9px;padding:2px 7px;border-radius:20px;font-weight:700}
+.t-grn{background:rgba(29,200,138,.15);color:var(--grn)}
+.t-amb{background:rgba(245,166,35,.15);color:var(--amb)}
+.t-red{background:rgba(232,69,90,.15);color:var(--red)}
+.t-blue{background:rgba(91,141,239,.15);color:var(--acc)}
+.sb-foot{padding:12px 18px;border-top:1px solid var(--brd);font-size:10px;color:rgba(107,122,158,.35);line-height:1.5}
+
+/* ── TOPBAR ── */
+.main{margin-left:var(--sb);flex:1;display:flex;flex-direction:column;min-width:0}
+.topbar{height:var(--tb);background:var(--surf);border-bottom:1px solid var(--brd);display:flex;align-items:center;padding:0 22px;gap:12px;position:sticky;top:0;z-index:100}
+#pt{font-size:14px;font-weight:600;color:#fff;flex:1;white-space:nowrap}
+.chip{display:inline-flex;align-items:center;padding:3px 11px;border-radius:20px;font-size:10px;font-weight:600;border:1px solid;white-space:nowrap}
+.c-blue{background:var(--acc-d);color:var(--acc);border-color:rgba(91,141,239,.25)}
+.c-grn{background:var(--grn-d);color:var(--grn);border-color:rgba(29,200,138,.25)}
+.c-amb{background:var(--amb-d);color:var(--amb);border-color:rgba(245,166,35,.25)}
+.c-red{background:var(--red-d);color:var(--red);border-color:rgba(232,69,90,.25)}
+#ult-act{font-size:10px;color:var(--mut);white-space:nowrap}
+
+/* ── PAGES ── */
+.page{display:none;padding:20px 22px;animation:fi .2s ease}
+.page.on{display:block}
+@keyframes fi{from{opacity:0;transform:translateY(5px)}to{opacity:1;transform:translateY(0)}}
+
+/* ── GRIDS ── */
+.g4{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-bottom:16px}
+.g3{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin-bottom:16px}
+.g2{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:16px}
+.g21{display:grid;grid-template-columns:2fr 1fr;gap:14px;margin-bottom:16px}
+.g12{display:grid;grid-template-columns:1fr 2fr;gap:14px;margin-bottom:16px}
+.g32{display:grid;grid-template-columns:3fr 2fr;gap:14px;margin-bottom:16px}
+.mb{margin-bottom:16px}
+
+/* ── CARD ── */
+.card{background:var(--card);border:1px solid var(--brd);border-radius:var(--r);padding:18px}
+.ct{font-size:12px;font-weight:600;color:var(--txt);margin-bottom:3px}
+.cs{font-size:10px;color:var(--mut);margin-bottom:13px}
+.cw{position:relative;width:100%}
+
+/* ── KPI ── */
+.kpi{background:var(--card);border:1px solid var(--brd);border-radius:var(--r);padding:16px 18px;position:relative;overflow:hidden}
+.kpi::before{content:'';position:absolute;top:0;left:0;right:0;height:2px}
+.kpi.k-blue::before{background:var(--acc)}
+.kpi.k-grn::before{background:var(--grn)}
+.kpi.k-amb::before{background:var(--amb)}
+.kpi.k-red::before{background:var(--red)}
+.kpi.k-pur::before{background:var(--pur)}
+.kl{font-size:10px;color:var(--mut);text-transform:uppercase;letter-spacing:.6px;margin-bottom:8px}
+.kv{font-size:26px;font-weight:700;line-height:1;letter-spacing:-.5px}
+.ks{font-size:10px;color:var(--mut);margin-top:5px}
+.kbar{height:3px;background:rgba(255,255,255,.06);border-radius:2px;margin-top:11px}
+.kfill{height:100%;border-radius:2px;transition:width .6s ease}
+
+/* ── TABLE ── */
+.tw{overflow-x:auto}
+table{width:100%;border-collapse:collapse;font-size:11px}
+th{padding:8px 11px;text-align:left;font-weight:600;color:var(--mut);border-bottom:1px solid var(--brd);font-size:10px;text-transform:uppercase;letter-spacing:.4px;white-space:nowrap;background:rgba(255,255,255,.015)}
+td{padding:8px 11px;border-bottom:1px solid rgba(37,45,74,.5);color:var(--txt);vertical-align:top}
+tr:hover td{background:rgba(255,255,255,.018)}
+.num{text-align:right;font-variant-numeric:tabular-nums}
+td.num{font-weight:500}
+.ellipsis{max-width:220px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+
+/* ── BADGE ESTADO ── */
+.badge{display:inline-flex;align-items:center;gap:4px;padding:3px 9px;border-radius:20px;font-size:10px;font-weight:600;white-space:nowrap}
+.b-grn{background:var(--grn-d);color:var(--grn)}
+.b-amb{background:var(--amb-d);color:var(--amb)}
+.b-red{background:var(--red-d);color:var(--red)}
+.b-mut{background:rgba(107,122,158,.1);color:var(--mut)}
+.b-blue{background:var(--acc-d);color:var(--acc)}
+
+/* ── FILTER BAR ── */
+.fbar{display:flex;gap:10px;align-items:center;flex-wrap:wrap;margin-bottom:16px;padding:12px 14px;background:var(--card);border:1px solid var(--brd);border-radius:var(--r)}
+.fbar label{font-size:11px;color:var(--mut);white-space:nowrap}
+select,input[type=text]{padding:5px 10px;border:1px solid var(--brd);border-radius:6px;font-size:11px;background:var(--surf);color:var(--txt);outline:none;cursor:pointer}
+select:hover,select:focus,input[type=text]:focus{border-color:var(--acc)}
+input[type=text]{min-width:160px}
+.fbar-r{margin-left:auto;display:flex;align-items:center;gap:10px}
+.fc{font-size:10px;color:var(--mut)}
+.btn-clear{padding:5px 12px;border:1px solid var(--brd);border-radius:6px;font-size:11px;background:transparent;color:var(--mut);cursor:pointer}
+.btn-clear:hover{border-color:var(--acc);color:var(--acc)}
+
+/* ── PROGRESS ROWS ── */
+.prw{display:flex;align-items:center;gap:10px;padding:8px 0;border-bottom:1px solid rgba(37,45,74,.4)}
+.prw:last-child{border-bottom:none}
+.prw-l{flex:1;font-size:12px}
+.prw-s{font-size:10px;color:var(--mut);margin-top:1px}
+.prw-b{width:90px;height:6px;background:rgba(255,255,255,.06);border-radius:3px;flex-shrink:0}
+.prw-f{height:100%;border-radius:3px}
+.prw-v{width:46px;text-align:right;font-size:11px;font-weight:700;flex-shrink:0}
+
+/* ── TIMELINE ── */
+.tl{display:flex;flex-direction:column;gap:10px;max-height:320px;overflow-y:auto;padding-right:4px}
+.tl-row{display:flex;gap:12px;align-items:flex-start}
+.tl-dot{width:9px;height:9px;border-radius:50%;flex-shrink:0;margin-top:3px}
+.tl-body{flex:1}
+.tl-t{font-size:11px;font-weight:600;color:var(--txt);line-height:1.4}
+.tl-m{font-size:10px;color:var(--mut);margin-top:2px}
+
+/* ── LOADING / ERROR ── */
+#loading{position:fixed;inset:0;background:var(--bg);display:flex;flex-direction:column;align-items:center;justify-content:center;z-index:9999;gap:16px}
+.spin{width:32px;height:32px;border:3px solid var(--brd);border-top-color:var(--acc);border-radius:50%;animation:spin .8s linear infinite}
+@keyframes spin{to{transform:rotate(360deg)}}
+#err-box{display:none;position:fixed;inset:0;background:var(--bg);align-items:center;justify-content:center;z-index:9999;flex-direction:column;gap:14px;padding:40px;text-align:center}
+#err-box h2{color:var(--red);font-size:20px}
+#err-box p{color:var(--mut);font-size:13px;max-width:580px;line-height:1.7}
+.err-code{background:var(--card);border:1px solid var(--brd);border-radius:8px;padding:14px 20px;font-size:12px;color:var(--amb);font-family:monospace;margin-top:8px;text-align:left;line-height:2.2}
+
+::-webkit-scrollbar{width:4px;height:4px}
+::-webkit-scrollbar-thumb{background:var(--brd);border-radius:4px}
+</style>
+</head>
+<body>
+
+<!-- LOADING -->
+<div id="loading">
+  <div class="spin"></div>
+  <div style="font-size:13px;color:var(--mut)">Cargando datos…</div>
+</div>
+
+<!-- ERROR -->
+<div id="err-box">
+  <h2>⚠ No se pudo cargar datos_bienes.json</h2>
+  <p>Necesitas ejecutarlo desde un servidor local. Abre CMD en la carpeta del proyecto y escribe:</p>
+  <div class="err-code">
+    python -m http.server 8080<br>
+    Luego abre: http://localhost:8080
+  </div>
+  <p style="margin-top:12px;font-size:12px">O doble clic en <strong>INICIAR_DASHBOARD.bat</strong></p>
+</div>
+
+<!-- SIDEBAR -->
+<aside class="sb">
+  <div class="sb-logo">
+    <div class="sb-logo-main">UDITD · Bienes y Servicios</div>
+    <div class="sb-logo-sub">INSN San Borja · Seguimiento 2026</div>
+  </div>
+  <nav class="sb-nav">
+    <div class="sb-sec">Vistas</div>
+    <div class="ni on" onclick="nav(this,'overview')">
+      <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="1.8"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/></svg>
+      Resumen Ejecutivo
+    </div>
+    <div class="ni" onclick="nav(this,'expedientes')">
+      <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="1.8"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>
+      Expedientes
+      <span class="ni-tag t-blue" id="sb-total">–</span>
+    </div>
+    <div class="ni" onclick="nav(this,'area')">
+      <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="1.8"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+      Por Área Usuaria
+    </div>
+    <div class="ni" onclick="nav(this,'presupuesto')">
+      <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="1.8"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
+      Presupuesto
+    </div>
+    <div class="sb-sec">Análisis</div>
+    <div class="ni" onclick="nav(this,'alertas')">
+      <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="1.8"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+      Alertas y Pendientes
+      <span class="ni-tag t-red" id="sb-pend">–</span>
+    </div>
+    <div class="ni" onclick="nav(this,'timeline')">
+      <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="1.8"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>
+      Timeline Mensual
+    </div>
+  </nav>
+  <div class="sb-foot" id="sb-foot">Cargando…</div>
+</aside>
+
+<!-- MAIN -->
+<main class="main">
+<div class="topbar">
+  <div id="pt">Resumen Ejecutivo</div>
+  <span class="chip c-blue">UDITD 2026</span>
+  <span class="chip c-amb" id="chip-corte">–</span>
+  <span id="ult-act"></span>
+</div>
+
+<!-- ══ P1: OVERVIEW ══ -->
+<div class="page on" id="pg-overview">
+  <div class="g4" id="kpi-row"></div>
+  <div class="g21">
+    <div class="card">
+      <div class="ct">Estado de Expedientes — Todos los Requerimientos</div>
+      <div class="cs">Distribución por estado · Clic en barra para filtrar</div>
+      <div class="cw" style="height:240px"><canvas id="c-estados"></canvas></div>
+    </div>
+    <div class="card">
+      <div class="ct">Distribución por Estado</div>
+      <div class="cs">Proporción visual</div>
+      <div class="cw" style="height:160px"><canvas id="c-pie-est"></canvas></div>
+      <div id="pie-legend" style="margin-top:12px"></div>
+    </div>
+  </div>
+  <div class="g32">
+    <div class="card">
+      <div class="ct">Presupuesto por Área Usuaria</div>
+      <div class="cs">Estimado vs. Contratado (S/) · Clic para filtrar expedientes</div>
+      <div class="cw" style="height:200px"><canvas id="c-area-ppto"></canvas></div>
+    </div>
+    <div class="card">
+      <div class="ct">Tipo de Requerimiento</div>
+      <div class="cs">Bienes vs. Servicios</div>
+      <div class="cw" style="height:120px"><canvas id="c-tipo"></canvas></div>
+      <div id="tipo-detail" style="margin-top:14px"></div>
+    </div>
+  </div>
+</div>
+
+<!-- ══ P2: EXPEDIENTES ══ -->
+<div class="page" id="pg-expedientes">
+  <div class="fbar">
+    <label>Área:</label>
+    <select id="f-area" onchange="filtrarExp()">
+      <option value="">Todas</option>
+      <option value="CIRUGIA EXP.">Cirugía Experimental</option>
+      <option value="SUIIT">SUIIT — Investigación e Innovación</option>
+      <option value="SUNTDD">SUNTDD — Docencia y Normalización</option>
+    </select>
+    <label>Estado:</label>
+    <select id="f-estado" onchange="filtrarExp()">
+      <option value="">Todos</option>
+      <option value="ATENDIDO">Atendido</option>
+      <option value="EN PROCESO">En Proceso</option>
+      <option value="PENDIENTE">Pendiente</option>
+    </select>
+    <label>Tipo:</label>
+    <select id="f-tipo" onchange="filtrarExp()">
+      <option value="">Todos</option>
+      <option value="BIEN">Bien</option>
+      <option value="SERVICIO">Servicio</option>
+    </select>
+    <label>Buscar:</label>
+    <input type="text" id="f-buscar" placeholder="Expediente o asunto…" oninput="filtrarExp()">
+    <div class="fbar-r">
+      <span class="fc" id="fc-exp"></span>
+      <button class="btn-clear" onclick="limpiarFiltros()">✕ Limpiar</button>
+    </div>
+  </div>
+  <div class="card">
+    <div class="ct">Registro de Expedientes — Detalle Completo</div>
+    <div class="cs" id="exp-subtitle">28 expedientes · Bienes y Servicios UDITD 2026</div>
+    <div class="tw">
+      <table>
+        <thead><tr>
+          <th>Estado</th><th>Expediente</th><th>Fecha Req.</th>
+          <th>Área</th><th>Asunto</th><th>Tipo</th>
+          <th class="num">Ppto. Est. S/</th><th>N° Orden</th><th>SIAF</th>
+          <th>Fecha Contrato</th><th class="num">Monto S/</th>
+          <th>Dependencia</th><th>Estado Fecha</th>
+        </tr></thead>
+        <tbody id="tbody-exp"></tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
+<!-- ══ P3: POR ÁREA ══ -->
+<div class="page" id="pg-area">
+  <div class="g3" id="area-kpis"></div>
+  <div class="g2">
+    <div class="card">
+      <div class="ct">Expedientes por Área — Comparativo de Estados</div>
+      <div class="cs">Atendidos · En proceso · Pendientes</div>
+      <div class="cw" style="height:200px"><canvas id="c-area-est"></canvas></div>
+    </div>
+    <div class="card">
+      <div class="ct">Ejecución Presupuestal por Área</div>
+      <div class="cs">% de monto contratado vs. ppto estimado</div>
+      <div class="cw" style="height:200px"><canvas id="c-area-ejec"></canvas></div>
+    </div>
+  </div>
+  <div class="g3" id="area-cards"></div>
+</div>
+
+<!-- ══ P4: PRESUPUESTO ══ -->
+<div class="page" id="pg-presupuesto">
+  <div class="g4" id="ppto-kpis"></div>
+  <div class="g21">
+    <div class="card">
+      <div class="ct">Presupuesto Estimado vs. Monto Contratado</div>
+      <div class="cs">Por expediente con presupuesto definido (S/)</div>
+      <div class="cw" style="height:300px"><canvas id="c-ppto-det"></canvas></div>
+    </div>
+    <div class="card">
+      <div class="ct">Concentración Presupuestal</div>
+      <div class="cs">Top requerimientos por monto estimado</div>
+      <div id="ppto-top"></div>
+    </div>
+  </div>
+  <div class="card">
+    <div class="ct">Tabla Presupuestal — Solo Expedientes con Monto</div>
+    <div class="cs">Ordenado por presupuesto estimado descendente</div>
+    <div class="tw">
+      <table>
+        <thead><tr><th>Estado</th><th>Expediente</th><th>Área</th><th>Asunto</th><th>Tipo</th><th class="num">Ppto. Est.</th><th class="num">Contratado</th><th class="num">Diferencia</th><th class="num">% Ejec.</th></tr></thead>
+        <tbody id="tbody-ppto"></tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
+<!-- ══ P5: ALERTAS ══ -->
+<div class="page" id="pg-alertas">
+  <div class="g4" id="alerta-kpis"></div>
+  <div class="g32">
+    <div class="card">
+      <div class="ct">Expedientes En Proceso — Detalle y Comentarios</div>
+      <div class="cs">Requieren seguimiento activo</div>
+      <div class="tw">
+        <table>
+          <thead><tr><th>Expediente</th><th>Área</th><th>Asunto</th><th>Tipo</th><th>Dependencia</th><th>F. Último Mov.</th><th>Comentario</th></tr></thead>
+          <tbody id="tbody-alerta"></tbody>
+        </table>
+      </div>
+    </div>
+    <div class="card">
+      <div class="ct">Sin Presupuesto Definido</div>
+      <div class="cs">Expedientes sin monto estimado — riesgo de bloqueo</div>
+      <div class="tl" id="tl-sin-ppto"></div>
+    </div>
+  </div>
+  <div class="card mb">
+    <div class="ct">Expedientes Pendientes y Sin Estado</div>
+    <div class="cs">Requieren acción inmediata</div>
+    <div class="tw"><table><thead><tr><th>Expediente</th><th>Fecha Req.</th><th>Área</th><th>Asunto</th><th>Estado</th><th>Comentario</th></tr></thead><tbody id="tbody-pend"></tbody></table></div>
+  </div>
+</div>
+
+<!-- ══ P6: TIMELINE ══ -->
+<div class="page" id="pg-timeline">
+  <div class="g2">
+    <div class="card">
+      <div class="ct">Requerimientos por Mes de Ingreso</div>
+      <div class="cs">Número de expedientes registrados por mes 2026</div>
+      <div class="cw" style="height:220px"><canvas id="c-tl-reqs"></canvas></div>
+    </div>
+    <div class="card">
+      <div class="ct">Montos Contratados por Mes</div>
+      <div class="cs">S/ comprometidos según fecha de contrato</div>
+      <div class="cw" style="height:220px"><canvas id="c-tl-montos"></canvas></div>
+    </div>
+  </div>
+  <div class="g21">
+    <div class="card">
+      <div class="ct">Cronograma de Expedientes — Vista Completa</div>
+      <div class="cs">Ordenados por fecha de requerimiento</div>
+      <div class="tw">
+        <table>
+          <thead><tr><th>F. Req.</th><th>Expediente</th><th>Área</th><th>Asunto</th><th>Estado</th><th>F. Contrato</th><th class="num">Monto S/</th></tr></thead>
+          <tbody id="tbody-tl"></tbody>
+        </table>
+      </div>
+    </div>
+    <div class="card">
+      <div class="ct">Tiempo Promedio de Atención</div>
+      <div class="cs">Días entre requerimiento y contrato (expedientes atendidos)</div>
+      <div id="tiempos-content"></div>
+    </div>
+  </div>
+</div>
+
+</main>
+
+<script>
+/* ══════════════════ HELPERS ══════════════════ */
+const fS = n => n == null ? '—' : 'S/ ' + (+n).toLocaleString('es-PE', {minimumFractionDigits: 0, maximumFractionDigits: 2});
+const fN = n => n == null ? '—' : (+n).toLocaleString('es-PE');
+const fD = s => s ? s.split('T')[0] : '—';
+const MESES = ['ENE','FEB','MAR','ABR','MAY','JUN','JUL','AGO','SET','OCT','NOV','DIC'];
+const ESTADO_BADGE = {
+  'ATENDIDO': '<span class="badge b-grn">✓ Atendido</span>',
+  'EN PROCESO': '<span class="badge b-amb">⟳ En Proceso</span>',
+  'PENDIENTE': '<span class="badge b-red">⚠ Pendiente</span>',
+  'SIN ESTADO': '<span class="badge b-mut">— Sin estado</span>',
+};
+const AREA_COLOR = {
+  'CIRUGIA EXP.': '#f5a623',
+  'SUIIT': '#5b8def',
+  'SUNTDD': '#1dc88a',
+};
+const AREA_FULL = {
+  'CIRUGIA EXP.': 'Servicio de Cirugía Experimental',
+  'SUIIT': 'Sub Unidad de Investigación e Innovación Tecnológica',
+  'SUNTDD': 'Sub Unidad de Normalización Técnica y Desarrollo de Docencia',
+};
+
+Chart.defaults.color = '#6b7a9e';
+Chart.defaults.borderColor = 'rgba(37,45,74,.8)';
+Chart.defaults.font.family = "'Segoe UI',system-ui,sans-serif";
+Chart.defaults.font.size = 11;
+
+let D = {};
+let CHARTS = {};
+let activeAreaFilter = null;
+
+function mkC(id, cfg) {
+  if (CHARTS[id]) { CHARTS[id].destroy(); }
+  const el = document.getElementById(id);
+  if (!el) return null;
+  CHARTS[id] = new Chart(el, cfg);
+  return CHARTS[id];
+}
+
+/* ══════════════════ NAV ══════════════════ */
+const TITLES = {
+  overview: 'Resumen Ejecutivo',
+  expedientes: 'Registro de Expedientes',
+  area: 'Análisis por Área Usuaria',
+  presupuesto: 'Seguimiento Presupuestal',
+  alertas: 'Alertas y Expedientes Pendientes',
+  timeline: 'Timeline Mensual 2026',
+};
+function nav(el, id) {
+  document.querySelectorAll('.ni').forEach(e => e.classList.remove('on'));
+  el.classList.add('on');
+  document.querySelectorAll('.page').forEach(p => p.classList.remove('on'));
+  document.getElementById('pg-' + id).classList.add('on');
+  document.getElementById('pt').textContent = TITLES[id];
+  if (id === 'expedientes') filtrarExp();
+  if (id === 'area') renderArea();
+  if (id === 'presupuesto') renderPpto();
+  if (id === 'alertas') renderAlertas();
+  if (id === 'timeline') renderTimeline();
+}
+
+/* ══════════════════ INIT ══════════════════ */
+async function init() {
+  try {
+    const res = await fetch('datos_bienes.json');
+    if (!res.ok) throw new Error('HTTP ' + res.status);
+    D = await res.json();
+    document.getElementById('loading').style.display = 'none';
+    buildUI();
+  } catch (e) {
+    document.getElementById('loading').style.display = 'none';
+    document.getElementById('err-box').style.display = 'flex';
+    console.error(e);
+  }
+}
+
+function buildUI() {
+  const R = D.resumen;
+  const meta = D.meta;
+
+  // topbar
+  document.getElementById('chip-corte').textContent = 'Actualizado: ' + meta.ultima_actualizacion;
+  document.getElementById('ult-act').textContent = meta.archivo_fuente;
+  document.getElementById('sb-foot').textContent = 'Fuente: ' + meta.archivo_fuente + '\n' + meta.ultima_actualizacion;
+  document.getElementById('sb-total').textContent = R.total;
+  document.getElementById('sb-pend').textContent = R.en_proceso + R.pendientes;
+
+  renderOverview();
+  filtrarExp();
+}
+
+/* ══════════════════ OVERVIEW ══════════════════ */
+function renderOverview() {
+  const R = D.resumen;
+  const pctEj = R.pct_ejecucion;
+
+  document.getElementById('kpi-row').innerHTML = `
+    <div class="kpi k-blue"><div class="kl">Total Expedientes</div><div class="kv" style="color:var(--acc)">${R.total}</div><div class="ks">Bienes y Servicios UDITD 2026</div><div class="kbar"><div class="kfill" style="width:100%;background:var(--acc)"></div></div></div>
+    <div class="kpi k-grn"><div class="kl">Atendidos</div><div class="kv" style="color:var(--grn)">${R.atendidos}</div><div class="ks">${Math.round(R.atendidos/R.total*100)}% del total · Cerrados</div><div class="kbar"><div class="kfill" style="width:${Math.round(R.atendidos/R.total*100)}%;background:var(--grn)"></div></div></div>
+    <div class="kpi k-amb"><div class="kl">En Proceso</div><div class="kv" style="color:var(--amb)">${R.en_proceso}</div><div class="ks">${Math.round(R.en_proceso/R.total*100)}% · Requieren seguimiento</div><div class="kbar"><div class="kfill" style="width:${Math.round(R.en_proceso/R.total*100)}%;background:var(--amb)"></div></div></div>
+    <div class="kpi k-red"><div class="kl">% Ejecución Ppto.</div><div class="kv" style="color:${pctEj>=60?'var(--grn)':pctEj>=30?'var(--amb)':'var(--red)'}">${pctEj}%</div><div class="ks">S/ ${(R.monto_contratado_total/1000).toFixed(0)}k / S/ ${(R.ppto_estimado_total/1000).toFixed(0)}k</div><div class="kbar"><div class="kfill" style="width:${Math.min(pctEj,100)}%;background:var(--amb)"></div></div></div>
+  `;
+
+  // Chart estados (horizontal bar)
+  const areas = Object.keys(D.por_area);
+  const aLabels = areas.map(a => a);
+  mkC('c-estados', {
+    type: 'bar',
+    data: {
+      labels: aLabels,
+      datasets: [
+        { label: 'Atendidos', data: areas.map(a => D.por_area[a].atendidos), backgroundColor: 'rgba(29,200,138,.75)', borderRadius: 4 },
+        { label: 'En Proceso', data: areas.map(a => D.por_area[a].en_proceso), backgroundColor: 'rgba(245,166,35,.75)', borderRadius: 4 },
+        { label: 'Pendientes', data: areas.map(a => D.por_area[a].total - D.por_area[a].atendidos - D.por_area[a].en_proceso), backgroundColor: 'rgba(232,69,90,.6)', borderRadius: 4 },
+      ]
+    },
+    options: {
+      responsive: true, maintainAspectRatio: false,
+      onClick: (e, els) => {
+        if (els.length) { activeAreaFilter = areas[els[0].index]; document.getElementById('f-area').value = activeAreaFilter; nav(document.querySelector('.ni[onclick*="expedientes"]'), 'expedientes'); }
+      },
+      plugins: { legend: { position: 'top', labels: { boxWidth: 10, padding: 10, font: { size: 10 } } } },
+      scales: { x: { stacked: false, ticks: { font: { size: 10 } }, grid: { display: false } }, y: { beginAtZero: true, ticks: { font: { size: 10 } }, grid: { color: 'rgba(255,255,255,.04)' } } }
+    }
+  });
+
+  // Pie estado
+  mkC('c-pie-est', {
+    type: 'doughnut',
+    data: {
+      labels: ['Atendido', 'En Proceso', 'Pendiente', 'Sin estado'],
+      datasets: [{ data: [D.resumen.atendidos, D.resumen.en_proceso, D.resumen.pendientes, D.resumen.sin_estado], backgroundColor: ['rgba(29,200,138,.8)', 'rgba(245,166,35,.8)', 'rgba(232,69,90,.8)', 'rgba(107,122,158,.4)'], borderColor: '#1a1f35', borderWidth: 2 }]
+    },
+    options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } } }
+  });
+  document.getElementById('pie-legend').innerHTML = `
+    <div style="display:flex;flex-direction:column;gap:6px;font-size:11px">
+      <div style="display:flex;justify-content:space-between"><span><span style="display:inline-block;width:10px;height:10px;border-radius:2px;background:#1dc88a;margin-right:6px"></span>Atendido</span><strong style="color:var(--grn)">${D.resumen.atendidos}</strong></div>
+      <div style="display:flex;justify-content:space-between"><span><span style="display:inline-block;width:10px;height:10px;border-radius:2px;background:#f5a623;margin-right:6px"></span>En Proceso</span><strong style="color:var(--amb)">${D.resumen.en_proceso}</strong></div>
+      <div style="display:flex;justify-content:space-between"><span><span style="display:inline-block;width:10px;height:10px;border-radius:2px;background:#e8455a;margin-right:6px"></span>Pendiente</span><strong style="color:var(--red)">${D.resumen.pendientes}</strong></div>
+      <div style="display:flex;justify-content:space-between"><span><span style="display:inline-block;width:10px;height:10px;border-radius:2px;background:#6b7a9e;margin-right:6px"></span>Sin estado</span><strong style="color:var(--mut)">${D.resumen.sin_estado}</strong></div>
+    </div>`;
+
+  // Ppto por área
+  mkC('c-area-ppto', {
+    type: 'bar',
+    data: {
+      labels: areas,
+      datasets: [
+        { label: 'Ppto. Estimado', data: areas.map(a => D.por_area[a].ppto), backgroundColor: areas.map(a => (AREA_COLOR[a] || '#5b8def') + '33'), borderColor: areas.map(a => AREA_COLOR[a] || '#5b8def'), borderWidth: 1.5, borderRadius: 4 },
+        { label: 'Contratado', data: areas.map(a => D.por_area[a].monto), backgroundColor: areas.map(a => (AREA_COLOR[a] || '#5b8def') + 'bb'), borderRadius: 4 },
+      ]
+    },
+    options: {
+      responsive: true, maintainAspectRatio: false,
+      plugins: { legend: { position: 'top', labels: { boxWidth: 10, font: { size: 10 } } } },
+      scales: { y: { beginAtZero: true, ticks: { callback: v => 'S/' + (v >= 1000 ? (v / 1000).toFixed(0) + 'k' : v), font: { size: 9 } }, grid: { color: 'rgba(255,255,255,.04)' } }, x: { ticks: { font: { size: 10 } }, grid: { display: false } } }
+    }
+  });
+
+  // Tipo donut
+  mkC('c-tipo', {
+    type: 'doughnut',
+    data: { labels: ['Servicios', 'Bienes', 'Sin tipo'], datasets: [{ data: [D.resumen.servicios, D.resumen.bienes, D.resumen.total - D.resumen.servicios - D.resumen.bienes], backgroundColor: ['rgba(155,114,245,.8)', 'rgba(34,212,240,.8)', 'rgba(107,122,158,.3)'], borderColor: '#1a1f35', borderWidth: 2 }] },
+    options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { position: 'right', labels: { boxWidth: 10, font: { size: 10 }, padding: 8 } } } }
+  });
+  document.getElementById('tipo-detail').innerHTML = `
+    <div class="prw"><div class="prw-l">Servicios<div class="prw-s">Contratación de servicios</div></div><div class="prw-b"><div class="prw-f" style="width:${Math.round(D.resumen.servicios/D.resumen.total*100)}%;background:var(--pur)"></div></div><div class="prw-v" style="color:var(--pur)">${D.resumen.servicios}</div></div>
+    <div class="prw"><div class="prw-l">Bienes<div class="prw-s">Adquisición de bienes</div></div><div class="prw-b"><div class="prw-f" style="width:${Math.round(D.resumen.bienes/D.resumen.total*100)}%;background:var(--tel)"></div></div><div class="prw-v" style="color:var(--tel)">${D.resumen.bienes}</div></div>`;
+}
+
+/* ══════════════════ EXPEDIENTES ══════════════════ */
+function filtrarExp() {
+  const fa = (document.getElementById('f-area')?.value || '').trim();
+  const fe = (document.getElementById('f-estado')?.value || '').trim();
+  const ft = (document.getElementById('f-tipo')?.value || '').trim();
+  const fb = (document.getElementById('f-buscar')?.value || '').toLowerCase().trim();
+
+  const registros = D.registros || [];
+  const filtrado = registros.filter(r => {
+    if (fa && r.area_corta !== fa) return false;
+    if (fe && r.estado !== fe) return false;
+    if (ft && r.tipo !== ft) return false;
+    if (fb && !r.expediente?.toLowerCase().includes(fb) && !r.asunto?.toLowerCase().includes(fb)) return false;
+    return true;
+  });
+
+  document.getElementById('fc-exp').textContent = `${filtrado.length} de ${registros.length}`;
+  document.getElementById('tbody-exp').innerHTML = filtrado.map(r => `
+    <tr>
+      <td>${ESTADO_BADGE[r.estado] || ESTADO_BADGE['SIN ESTADO']}</td>
+      <td style="font-family:monospace;font-size:10px;white-space:nowrap;color:var(--acc)">${r.expediente || '—'}</td>
+      <td style="white-space:nowrap;font-size:10px">${fD(r.fecha_req)}</td>
+      <td><span style="font-size:10px;font-weight:600;color:${AREA_COLOR[r.area_corta] || '#aaa'}">${r.area_corta}</span></td>
+      <td class="ellipsis" title="${r.asunto || ''}">${r.asunto || '—'}</td>
+      <td>${r.tipo ? `<span class="badge ${r.tipo === 'BIEN' ? 'b-blue' : 'b-mut'}">${r.tipo}</span>` : '—'}</td>
+      <td class="num">${r.presupuesto_est ? fS(r.presupuesto_est) : '—'}</td>
+      <td style="text-align:center;font-size:10px">${r.nro_orden || '—'}</td>
+      <td style="text-align:center;font-size:10px">${r.siaf || '—'}</td>
+      <td style="white-space:nowrap;font-size:10px">${fD(r.fecha_contrato)}</td>
+      <td class="num">${r.monto ? fS(r.monto) : '—'}</td>
+      <td style="font-size:10px;max-width:140px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap" title="${r.dependencia || ''}">${r.dependencia || '—'}</td>
+      <td style="white-space:nowrap;font-size:10px">${fD(r.fecha_atencion)}</td>
+    </tr>`).join('');
+}
+
+function limpiarFiltros() {
+  ['f-area', 'f-estado', 'f-tipo'].forEach(id => { const el = document.getElementById(id); if (el) el.value = ''; });
+  const fb = document.getElementById('f-buscar'); if (fb) fb.value = '';
+  filtrarExp();
+}
+
+/* ══════════════════ POR ÁREA ══════════════════ */
+function renderArea() {
+  const areas = Object.keys(D.por_area);
+
+  document.getElementById('area-kpis').innerHTML = areas.map(a => {
+    const ad = D.por_area[a];
+    const col = AREA_COLOR[a] || '#5b8def';
+    const pct = ad.ppto > 0 ? Math.round(ad.monto / ad.ppto * 100) : 0;
+    return `<div class="kpi" style="border-top:2px solid ${col}">
+      <div class="kl">${a}</div>
+      <div class="kv" style="color:${col};font-size:20px">${ad.total} exp.</div>
+      <div class="ks">${ad.atendidos} atendidos · ${ad.en_proceso} en proceso</div>
+      <div style="margin-top:8px;font-size:11px;color:var(--mut)">Ppto: ${fS(ad.ppto)} | Contrat: ${fS(ad.monto)}</div>
+      <div class="kbar" style="margin-top:6px"><div class="kfill" style="width:${Math.min(pct,100)}%;background:${col}"></div></div>
+    </div>`;
+  }).join('');
+
+  mkC('c-area-est', {
+    type: 'bar',
+    data: {
+      labels: areas,
+      datasets: [
+        { label: 'Atendidos', data: areas.map(a => D.por_area[a].atendidos), backgroundColor: 'rgba(29,200,138,.75)', borderRadius: 4 },
+        { label: 'En Proceso', data: areas.map(a => D.por_area[a].en_proceso), backgroundColor: 'rgba(245,166,35,.75)', borderRadius: 4 },
+        { label: 'Otros', data: areas.map(a => D.por_area[a].total - D.por_area[a].atendidos - D.por_area[a].en_proceso), backgroundColor: 'rgba(232,69,90,.5)', borderRadius: 4 },
+      ]
+    },
+    options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { position: 'top', labels: { boxWidth: 8, font: { size: 10 } } } }, scales: { x: { ticks: { font: { size: 10 } }, grid: { display: false } }, y: { beginAtZero: true, ticks: { font: { size: 10 } }, grid: { color: 'rgba(255,255,255,.04)' } } } }
+  });
+
+  mkC('c-area-ejec', {
+    type: 'bar',
+    data: {
+      labels: areas,
+      datasets: [{ label: '% Ejecución', data: areas.map(a => D.por_area[a].ppto > 0 ? Math.round(D.por_area[a].monto / D.por_area[a].ppto * 100) : 0), backgroundColor: areas.map(a => AREA_COLOR[a] + 'bb'), borderColor: areas.map(a => AREA_COLOR[a]), borderWidth: 1.5, borderRadius: 4 }]
+    },
+    options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false }, tooltip: { callbacks: { label: c => c.raw + '%' } } }, scales: { x: { ticks: { font: { size: 10 } }, grid: { display: false } }, y: { beginAtZero: true, max: 110, ticks: { callback: v => v + '%', font: { size: 9 } }, grid: { color: 'rgba(255,255,255,.04)' } } } }
+  });
+
+  document.getElementById('area-cards').innerHTML = areas.map(a => {
+    const ad = D.por_area[a]; const col = AREA_COLOR[a] || '#5b8def';
+    const regs = D.registros.filter(r => r.area_corta === a);
+    const sinPpto = regs.filter(r => !r.presupuesto_est).length;
+    return `<div class="card" style="border-left:3px solid ${col}">
+      <div class="ct" style="color:${col}">${AREA_FULL[a] || a}</div>
+      <div class="cs">Resumen detallado</div>
+      ${['ATENDIDO','EN PROCESO','PENDIENTE'].map(e => {
+        const n = regs.filter(r => r.estado === e).length;
+        return n > 0 ? `<div class="prw"><div class="prw-l">${e}</div><div class="prw-b"><div class="prw-f" style="width:${Math.round(n/ad.total*100)}%;background:${e==='ATENDIDO'?'var(--grn)':e==='EN PROCESO'?'var(--amb)':'var(--red)'}"></div></div><div class="prw-v">${n}</div></div>` : '';
+      }).join('')}
+      <div style="margin-top:10px;font-size:10px;color:var(--mut)">Sin ppto definido: <strong style="color:${sinPpto>0?'var(--red)':'var(--grn)'}">${sinPpto}</strong></div>
+    </div>`;
+  }).join('');
+}
+
+/* ══════════════════ PRESUPUESTO ══════════════════ */
+function renderPpto() {
+  const R = D.resumen;
+  document.getElementById('ppto-kpis').innerHTML = `
+    <div class="kpi k-blue"><div class="kl">Presupuesto Estimado Total</div><div class="kv" style="color:var(--acc);font-size:18px">${fS(R.ppto_estimado_total)}</div><div class="ks">Expedientes con monto definido</div></div>
+    <div class="kpi k-grn"><div class="kl">Monto Contratado</div><div class="kv" style="color:var(--grn);font-size:18px">${fS(R.monto_contratado_total)}</div><div class="ks">${R.pct_ejecucion}% del estimado</div></div>
+    <div class="kpi k-amb"><div class="kl">Saldo por Contratar</div><div class="kv" style="color:var(--amb);font-size:18px">${fS(R.ppto_pendiente)}</div><div class="ks">Pendiente de proceso de selección</div></div>
+    <div class="kpi k-red"><div class="kl">Sin Ppto. Definido</div><div class="kv" style="color:var(--red)">${D.registros.filter(r=>!r.presupuesto_est).length}</div><div class="ks">de ${R.total} expedientes</div></div>
+  `;
+
+  const conPpto = D.registros.filter(r => r.presupuesto_est).sort((a, b) => b.presupuesto_est - a.presupuesto_est);
+  const lbls = conPpto.map(r => r.expediente);
+  const pptoVals = conPpto.map(r => r.presupuesto_est);
+  const montoVals = conPpto.map(r => r.monto || 0);
+
+  mkC('c-ppto-det', {
+    type: 'bar',
+    data: {
+      labels: lbls,
+      datasets: [
+        { label: 'Ppto. Estimado', data: pptoVals, backgroundColor: 'rgba(91,141,239,.25)', borderColor: 'rgba(91,141,239,.7)', borderWidth: 1.5, borderRadius: 3 },
+        { label: 'Contratado', data: montoVals, backgroundColor: conPpto.map(r => r.estado === 'ATENDIDO' ? 'rgba(29,200,138,.75)' : 'rgba(245,166,35,.6)'), borderRadius: 3 },
+      ]
+    },
+    options: {
+      responsive: true, maintainAspectRatio: false, indexAxis: 'y',
+      plugins: { legend: { position: 'top', labels: { boxWidth: 10, font: { size: 10 } } }, tooltip: { callbacks: { label: c => c.dataset.label + ': ' + fS(c.raw) } } },
+      scales: { x: { beginAtZero: true, ticks: { callback: v => 'S/' + (v >= 1000 ? (v / 1000).toFixed(0) + 'k' : v), font: { size: 9 } }, grid: { color: 'rgba(255,255,255,.04)' } }, y: { ticks: { font: { size: 9 } } } }
+    }
+  });
+
+  // Top presupuestos
+  document.getElementById('ppto-top').innerHTML = conPpto.slice(0, 8).map(r => {
+    const pct = Math.min(Math.round((r.presupuesto_est / conPpto[0].presupuesto_est) * 100), 100);
+    const col = AREA_COLOR[r.area_corta] || '#5b8def';
+    return `<div class="prw">
+      <div class="prw-l"><div style="font-size:10px;font-weight:600">${r.expediente}</div><div class="prw-s">${(r.asunto || '').substring(0, 45)}…</div></div>
+      <div class="prw-b" style="width:70px"><div class="prw-f" style="width:${pct}%;background:${col}"></div></div>
+      <div class="prw-v" style="color:${col};font-size:10px">${fS(r.presupuesto_est)}</div>
+    </div>`;
+  }).join('');
+
+  document.getElementById('tbody-ppto').innerHTML = conPpto.map(r => {
+    const dif = r.monto != null ? r.monto - r.presupuesto_est : null;
+    const pct = r.monto != null ? Math.round(r.monto / r.presupuesto_est * 100) : null;
+    return `<tr>
+      <td>${ESTADO_BADGE[r.estado] || ESTADO_BADGE['SIN ESTADO']}</td>
+      <td style="font-size:10px;font-family:monospace;color:var(--acc)">${r.expediente}</td>
+      <td style="font-size:10px;color:${AREA_COLOR[r.area_corta] || '#aaa'};font-weight:600">${r.area_corta}</td>
+      <td class="ellipsis" title="${r.asunto || ''}">${r.asunto || '—'}</td>
+      <td>${r.tipo ? `<span class="badge ${r.tipo === 'BIEN' ? 'b-blue' : 'b-mut'}">${r.tipo}</span>` : '—'}</td>
+      <td class="num">${fS(r.presupuesto_est)}</td>
+      <td class="num" style="color:var(--grn)">${r.monto ? fS(r.monto) : '—'}</td>
+      <td class="num" style="color:${dif == null ? 'var(--mut)' : dif >= 0 ? 'var(--grn)' : 'var(--red)'}">${dif != null ? fS(dif) : '—'}</td>
+      <td class="num" style="color:${pct == null ? 'var(--mut)' : pct >= 100 ? 'var(--grn)' : 'var(--amb)'};font-weight:700">${pct != null ? pct + '%' : '—'}</td>
+    </tr>`;
+  }).join('');
+}
+
+/* ══════════════════ ALERTAS ══════════════════ */
+function renderAlertas() {
+  const R = D.resumen;
+  const sinPpto = D.registros.filter(r => !r.presupuesto_est);
+  const enProceso = D.registros.filter(r => r.estado === 'EN PROCESO');
+  const pends = D.registros.filter(r => r.estado === 'PENDIENTE' || r.estado === 'SIN ESTADO');
+
+  document.getElementById('alerta-kpis').innerHTML = `
+    <div class="kpi k-amb"><div class="kl">En Proceso</div><div class="kv" style="color:var(--amb)">${enProceso.length}</div><div class="ks">Requieren seguimiento activo</div></div>
+    <div class="kpi k-red"><div class="kl">Pendientes / Sin estado</div><div class="kv" style="color:var(--red)">${pends.length}</div><div class="ks">Acción inmediata requerida</div></div>
+    <div class="kpi k-pur"><div class="kl" style="--pur:#9b72f5">Sin Ppto. Definido</div><div class="kv" style="color:var(--pur)">${sinPpto.length}</div><div class="ks">Riesgo de bloqueo presupuestal</div></div>
+    <div class="kpi k-blue"><div class="kl">Ppto. Pendiente Contrato</div><div class="kv" style="color:var(--acc);font-size:18px">${fS(R.ppto_pendiente)}</div><div class="ks">Por ejecutar</div></div>
+  `;
+
+  document.getElementById('tbody-alerta').innerHTML = enProceso.map(r => `<tr>
+    <td style="font-size:10px;font-family:monospace;color:var(--acc)">${r.expediente}</td>
+    <td style="font-size:10px;color:${AREA_COLOR[r.area_corta] || '#aaa'};font-weight:600">${r.area_corta}</td>
+    <td class="ellipsis" title="${r.asunto || ''}">${r.asunto || '—'}</td>
+    <td>${r.tipo ? `<span class="badge b-mut">${r.tipo}</span>` : '—'}</td>
+    <td style="font-size:10px;max-width:120px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap" title="${r.dependencia || ''}">${r.dependencia || '—'}</td>
+    <td style="font-size:10px;white-space:nowrap">${fD(r.fecha_atencion)}</td>
+    <td style="font-size:10px;max-width:180px;color:var(--mut)" title="${r.comentario || ''}">${(r.comentario || '—').substring(0, 60)}${r.comentario && r.comentario.length > 60 ? '…' : ''}</td>
+  </tr>`).join('');
+
+  document.getElementById('tl-sin-ppto').innerHTML = sinPpto.map(r => `
+    <div class="tl-row">
+      <div class="tl-dot" style="background:var(--red)"></div>
+      <div class="tl-body"><div class="tl-t">${r.expediente} · ${r.area_corta}</div><div class="tl-m">${(r.asunto || '').substring(0, 60)}…</div></div>
+    </div>`).join('');
+
+  document.getElementById('tbody-pend').innerHTML = pends.map(r => `<tr>
+    <td style="font-size:10px;font-family:monospace;color:var(--acc)">${r.expediente}</td>
+    <td style="font-size:10px;white-space:nowrap">${fD(r.fecha_req)}</td>
+    <td style="font-size:10px;color:${AREA_COLOR[r.area_corta] || '#aaa'};font-weight:600">${r.area_corta}</td>
+    <td class="ellipsis">${r.asunto || '—'}</td>
+    <td>${ESTADO_BADGE[r.estado] || ESTADO_BADGE['SIN ESTADO']}</td>
+    <td style="font-size:10px;color:var(--mut)">${(r.comentario || '—').substring(0, 80)}</td>
+  </tr>`).join('');
+}
+
+/* ══════════════════ TIMELINE ══════════════════ */
+function renderTimeline() {
+  mkC('c-tl-reqs', {
+    type: 'bar',
+    data: { labels: MESES, datasets: [{ label: 'Requerimientos', data: D.timeline.requerimientos, backgroundColor: 'rgba(91,141,239,.7)', borderRadius: 4 }] },
+    options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } }, scales: { y: { beginAtZero: true, ticks: { stepSize: 1, font: { size: 9 } }, grid: { color: 'rgba(255,255,255,.04)' } }, x: { ticks: { font: { size: 9 } }, grid: { display: false } } } }
+  });
+
+  mkC('c-tl-montos', {
+    type: 'bar',
+    data: { labels: MESES, datasets: [{ label: 'Monto Contratado S/', data: D.timeline.montos_contratados, backgroundColor: D.timeline.montos_contratados.map(v => v > 0 ? 'rgba(29,200,138,.7)' : 'rgba(37,45,74,.4)'), borderRadius: 4 }] },
+    options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false }, tooltip: { callbacks: { label: c => fS(c.raw) } } }, scales: { y: { beginAtZero: true, ticks: { callback: v => 'S/' + (v >= 1000 ? (v / 1000).toFixed(0) + 'k' : v), font: { size: 9 } }, grid: { color: 'rgba(255,255,255,.04)' } }, x: { ticks: { font: { size: 9 } }, grid: { display: false } } } }
+  });
+
+  const sorted = [...D.registros].sort((a, b) => (a.fecha_req || '').localeCompare(b.fecha_req || ''));
+  document.getElementById('tbody-tl').innerHTML = sorted.map(r => `<tr>
+    <td style="white-space:nowrap;font-size:10px">${fD(r.fecha_req)}</td>
+    <td style="font-size:10px;font-family:monospace;color:var(--acc)">${r.expediente}</td>
+    <td style="font-size:10px;color:${AREA_COLOR[r.area_corta] || '#aaa'};font-weight:600">${r.area_corta}</td>
+    <td class="ellipsis">${r.asunto || '—'}</td>
+    <td>${ESTADO_BADGE[r.estado] || ESTADO_BADGE['SIN ESTADO']}</td>
+    <td style="font-size:10px;white-space:nowrap">${fD(r.fecha_contrato)}</td>
+    <td class="num">${r.monto ? fS(r.monto) : '—'}</td>
+  </tr>`).join('');
+
+  // Tiempo de atención
+  const atendidos = D.registros.filter(r => r.estado === 'ATENDIDO' && r.fecha_req && r.fecha_contrato);
+  const tiempos = atendidos.map(r => {
+    const d1 = new Date(r.fecha_req), d2 = new Date(r.fecha_contrato);
+    return { exp: r.expediente, dias: Math.round((d2 - d1) / 86400000), area: r.area_corta };
+  }).filter(t => t.dias >= 0).sort((a, b) => a.dias - b.dias);
+  const promedio = tiempos.length ? Math.round(tiempos.reduce((s, t) => s + t.dias, 0) / tiempos.length) : 0;
+
+  document.getElementById('tiempos-content').innerHTML = `
+    <div style="text-align:center;padding:16px 0;border-bottom:1px solid var(--brd)">
+      <div style="font-size:36px;font-weight:700;color:var(--acc)">${promedio}</div>
+      <div style="font-size:11px;color:var(--mut);margin-top:4px">días promedio de atención</div>
+      <div style="font-size:10px;color:var(--mut)">(fecha requerimiento → fecha contrato)</div>
+    </div>
+    <div style="margin-top:12px">
+      ${tiempos.map(t => `<div class="prw">
+        <div class="prw-l"><div style="font-size:10px">${t.exp}</div><div class="prw-s" style="color:${AREA_COLOR[t.area]||'#aaa'}">${t.area}</div></div>
+        <div class="prw-b"><div class="prw-f" style="width:${Math.min(Math.round(t.dias/60*100),100)}%;background:${t.dias<=20?'var(--grn)':t.dias<=45?'var(--amb)':'var(--red)'}"></div></div>
+        <div class="prw-v" style="color:${t.dias<=20?'var(--grn)':t.dias<=45?'var(--amb)':'var(--red)'}">${t.dias}d</div>
+      </div>`).join('')}
+    </div>`;
+}
+
+// Hide sidebar/main until loaded
+document.querySelector('.sb').style.display = 'none';
+document.querySelector('.main').style.display = 'none';
+
+init().then(() => {
+  document.querySelector('.sb').style.display = 'flex';
+  document.querySelector('.main').style.display = 'flex';
+});
+</script>
+</body>
+</html>
