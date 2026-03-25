@@ -1,0 +1,37 @@
+name: Actualizar Dashboard desde Excel
+
+# Se ejecuta automáticamente cuando subes el Excel a GitHub
+on:
+  push:
+    paths:
+      - 'SEGUIM_BIENES_SERVICIOS_UDITD.xlsx'  # Solo cuando cambia el Excel
+  workflow_dispatch:   # También se puede ejecutar manualmente desde GitHub
+
+jobs:
+  convertir-excel:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write   # Necesario para poder hacer commit del JSON
+
+    steps:
+      - name: Descargar el repositorio
+        uses: actions/checkout@v4
+
+      - name: Instalar Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Instalar dependencias (pandas + openpyxl)
+        run: pip install pandas openpyxl
+
+      - name: Convertir Excel a JSON
+        run: python excel_to_json.py
+
+      - name: Subir datos_bienes.json automáticamente
+        run: |
+          git config user.name  "GitHub Actions Bot"
+          git config user.email "actions@github.com"
+          git add datos_bienes.json
+          git diff --staged --quiet || git commit -m "Auto-actualización datos: $(date '+%d/%m/%Y %H:%M')"
+          git push
