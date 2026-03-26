@@ -1,21 +1,21 @@
 {
   "meta": {
     "archivo_fuente": "SEGUIM_BIENES_SERVICIOS_UDITD.xlsx",
-    "ultima_actualizacion": "25/03/2026 19:30",
-    "total_registros": 28
+    "ultima_actualizacion": "26/03/2026 14:10",
+    "total_registros": 31
   },
   "resumen": {
-    "total": 28,
-    "atendidos": 11,
+    "total": 31,
+    "atendidos": 14,
     "en_proceso": 15,
     "pendientes": 1,
     "sin_estado": 1,
     "ppto_estimado_total": 236013.2,
-    "monto_contratado_total": 85362.8,
-    "ppto_pendiente": 150650.4,
-    "pct_ejecucion": 36.2,
-    "bienes": 6,
-    "servicios": 16
+    "monto_contratado_total": 104785.8,
+    "ppto_pendiente": 131227.4,
+    "pct_ejecucion": 44.4,
+    "bienes": 11,
+    "servicios": 19
   },
   "por_area": {
     "CIRUGIA EXP.": {
@@ -26,11 +26,11 @@
       "monto": 81408.8
     },
     "SUIIT": {
-      "total": 6,
-      "atendidos": 2,
+      "total": 9,
+      "atendidos": 5,
       "en_proceso": 3,
       "ppto": 18384.4,
-      "monto": 3384
+      "monto": 22807
     },
     "SUNTDD": {
       "total": 9,
@@ -56,7 +56,7 @@
       "DIC"
     ],
     "requerimientos": [
-      16,
+      19,
       2,
       9,
       0,
@@ -71,8 +71,8 @@
     ],
     "montos_contratados": [
       0.0,
-      38700.8,
-      46092.0,
+      51573.8,
+      52642.0,
       0.0,
       0.0,
       0.0,
@@ -320,6 +320,42 @@
       "area_corta": "CIRUGIA EXP."
     },
     {
+      "expediente": "SUIIT-20260000008",
+      "fecha_req": "2026-01-16",
+      "area_usuaria": "SUB UNIDAD DE INVESTIGACION E INNOVACION TECNOLOGICA",
+      "asunto": "SERVICIO DE EVENTOS ADMINISTRATIVOS - 3D",
+      "tipo": "SERVICIO",
+      "presupuesto_est": null,
+      "nro_orden": 922,
+      "siaf": 1605,
+      "fecha_contrato": "2026-03-02",
+      "monto": 6550,
+      "dependencia": "TESORERIA - CASTRO BURGOS KIARA KRISTEL",
+      "usuario": "CASTRO BURGOS KIARA KRISTEL",
+      "fecha_atencion": "2026-03-20",
+      "estado": "ATENDIDO",
+      "comentario": null,
+      "area_corta": "SUIIT"
+    },
+    {
+      "expediente": "SUIIT-20260000009",
+      "fecha_req": "2026-01-16",
+      "area_usuaria": "SUB UNIDAD DE INVESTIGACION E INNOVACION TECNOLOGICA",
+      "asunto": "SERVICIO DE DISEÑO Y ELABORACION DE MERCHANDISING",
+      "tipo": "SERVICIO",
+      "presupuesto_est": null,
+      "nro_orden": 899,
+      "siaf": 1419,
+      "fecha_contrato": "2026-02-23",
+      "monto": 12323,
+      "dependencia": "SUB UNIDAD DE INVESTIGACION E INNOVACION TECNOLOGICA - MARTINEZ ESTEBAN PEGGY CAROL",
+      "usuario": "MARTINEZ ESTEBAN PEGGY CAROL",
+      "fecha_atencion": "2026-02-24",
+      "estado": "ATENDIDO",
+      "comentario": "Se toma conocimiento y se espera se realice el servicio",
+      "area_corta": "SUIIT"
+    },
+    {
       "expediente": "SUIIT-20260000017",
       "fecha_req": "2026-01-21",
       "area_usuaria": "SUB UNIDAD DE INVESTIGACION E INNOVACION TECNOLOGICA",
@@ -335,6 +371,24 @@
       "fecha_atencion": null,
       "estado": "ATENDIDO",
       "comentario": "ATENDIDO",
+      "area_corta": "SUIIT"
+    },
+    {
+      "expediente": "SUIIT-20260000020",
+      "fecha_req": "2026-01-27",
+      "area_usuaria": "SUB UNIDAD DE INVESTIGACION E INNOVACION TECNOLOGICA",
+      "asunto": "SERVICIO DE DOCENCIA",
+      "tipo": "SERVICIO",
+      "presupuesto_est": null,
+      "nro_orden": 919,
+      "siaf": 1569,
+      "fecha_contrato": "2026-02-27",
+      "monto": 550,
+      "dependencia": "SUB UNIDAD DE INVESTIGACION E INNOVACION TECNOLOGICA - MARTINEZ ESTEBAN PEGGY CAROL",
+      "usuario": "MARTINEZ ESTEBAN PEGGY CAROL",
+      "fecha_atencion": "2026-03-02",
+      "estado": "ATENDIDO",
+      "comentario": "se recibe y a la espera que brinde el servicio",
       "area_corta": "SUIIT"
     },
     {
@@ -438,9 +492,9 @@
       "siaf": null,
       "fecha_contrato": null,
       "monto": null,
-      "dependencia": "PRESUPUESTO",
-      "usuario": "VERGARA TELLO ROXANA",
-      "fecha_atencion": "2026-03-25",
+      "dependencia": "PROGRAMACION DE LAS CONTRATACIONES - CONCHA CAMARGO YOHEL EDISON",
+      "usuario": "CONCHA CAMARGO YOHEL EDISON",
+      "fecha_atencion": "2026-03-26",
       "estado": "EN PROCESO",
       "comentario": "SOLICITO DISPONIBILIDAD PRESUPUESTAL PARA CONTRATACION DIRECTA PROCESO DE SELECCION: Requerimiento de la “Suscripción a Base de Datos Bibliográfica sobre Producción y Publicaciones Científicas” Software- UPTODATE",
       "area_corta": "SUNTDD"
@@ -450,7 +504,7 @@
       "fecha_req": "2026-01-15",
       "area_usuaria": "SUB UNIDAD DE NORMALIZACION TECNICA Y DESARROLLO DE DOCENCIA",
       "asunto": "SOLICITUD DE ELABORACIÓN DE ESPECIFICACIONES TÉCNICAS DE TÓTEM INTERACTIVO MÓVIL PARA ACTIVIDADES ACADÉMICAS",
-      "tipo": null,
+      "tipo": "BIEN",
       "presupuesto_est": null,
       "nro_orden": null,
       "siaf": null,
@@ -468,7 +522,7 @@
       "fecha_req": "2026-01-15",
       "area_usuaria": "SUB UNIDAD DE NORMALIZACION TECNICA Y DESARROLLO DE DOCENCIA",
       "asunto": "SOLICITUD DE ELABORACIÓN DE ESPECIFICACIONES TÉCNICAS DE EQUIPOS DE ILUMINACIÓN (TACHOS PAR LED) PARA ACTIVIDADES ACADÉMICAS",
-      "tipo": null,
+      "tipo": "BIEN",
       "presupuesto_est": null,
       "nro_orden": null,
       "siaf": null,
@@ -486,7 +540,7 @@
       "fecha_req": "2026-01-15",
       "area_usuaria": "SUB UNIDAD DE NORMALIZACION TECNICA Y DESARROLLO DE DOCENCIA",
       "asunto": "SOLICITUD DE ELABORACIÓN DE ESPECIFICACIONES TÉCNICAS DE ACRÍLICO CON LOGO INSTITUCIONAL PARA PODIO (ATRIO) DE MADERA DEL AUDITORIO DEL INSNSB",
-      "tipo": null,
+      "tipo": "BIEN",
       "presupuesto_est": 570,
       "nro_orden": null,
       "siaf": null,
@@ -504,7 +558,7 @@
       "fecha_req": "2026-01-15",
       "area_usuaria": "SUB UNIDAD DE NORMALIZACION TECNICA Y DESARROLLO DE DOCENCIA",
       "asunto": "SOLICITUD DE ELABORACIÓN DE ESPECIFICACIONES TÉCNICAS DE ACRÍLICO CON LOGO INSTITUCIONAL PARA PODIO (ATRIO) DE MADERA DEL AUDITORIO DEL INSNSB",
-      "tipo": null,
+      "tipo": "BIEN",
       "presupuesto_est": null,
       "nro_orden": null,
       "siaf": null,
@@ -522,7 +576,7 @@
       "fecha_req": "26802/2026",
       "area_usuaria": "SUB UNIDAD DE NORMALIZACION TECNICA Y DESARROLLO DE DOCENCIA",
       "asunto": "SOLICITUD DE VENTILADORES GRANDES (INDUSTRIALES) PARA AUDITORIO INSTITUCIONAL",
-      "tipo": null,
+      "tipo": "BIEN",
       "presupuesto_est": null,
       "nro_orden": null,
       "siaf": null,
