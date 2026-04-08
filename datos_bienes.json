@@ -1,13 +1,13 @@
 {
   "meta": {
     "archivo_fuente": "SEGUIM_BIENES_SERVICIOS_UDITD.xlsx",
-    "ultima_actualizacion": "26/03/2026 14:10",
-    "total_registros": 31
+    "ultima_actualizacion": "08/04/2026 14:53",
+    "total_registros": 32
   },
   "resumen": {
-    "total": 31,
+    "total": 32,
     "atendidos": 14,
-    "en_proceso": 15,
+    "en_proceso": 16,
     "pendientes": 1,
     "sin_estado": 1,
     "ppto_estimado_total": 236013.2,
@@ -15,7 +15,7 @@
     "ppto_pendiente": 131227.4,
     "pct_ejecucion": 44.4,
     "bienes": 11,
-    "servicios": 19
+    "servicios": 20
   },
   "por_area": {
     "CIRUGIA EXP.": {
@@ -26,9 +26,9 @@
       "monto": 81408.8
     },
     "SUIIT": {
-      "total": 9,
+      "total": 10,
       "atendidos": 5,
-      "en_proceso": 3,
+      "en_proceso": 4,
       "ppto": 18384.4,
       "monto": 22807
     },
@@ -59,7 +59,7 @@
       19,
       2,
       9,
-      0,
+      1,
       0,
       0,
       0,
@@ -313,8 +313,8 @@
       "fecha_contrato": null,
       "monto": null,
       "dependencia": "PROCESO DE SELECCIÓN",
-      "usuario": "RAMIREZ SARAVIA KEVIN ANDERSON",
-      "fecha_atencion": "2026-03-22",
+      "usuario": "QUISPE SANCHEZ FERNANDO JOSE",
+      "fecha_atencion": "2026-03-26",
       "estado": "EN PROCESO",
       "comentario": null,
       "area_corta": "CIRUGIA EXP."
@@ -334,6 +334,24 @@
       "usuario": "CASTRO BURGOS KIARA KRISTEL",
       "fecha_atencion": "2026-03-20",
       "estado": "ATENDIDO",
+      "comentario": null,
+      "area_corta": "SUIIT"
+    },
+    {
+      "expediente": "SUIIT-20260000082",
+      "fecha_req": "2026-04-01",
+      "area_usuaria": "SUB UNIDAD DE INVESTIGACION E INNOVACION TECNOLOGICA",
+      "asunto": "SERVICIO DE EVENTOS ADMINISTRATIVOS - 3D",
+      "tipo": "SERVICIO",
+      "presupuesto_est": null,
+      "nro_orden": null,
+      "siaf": null,
+      "fecha_contrato": null,
+      "monto": null,
+      "dependencia": "LOGÍSTICA",
+      "usuario": "JEFATURA",
+      "fecha_atencion": "2026-04-07",
+      "estado": "SIN ESTADO",
       "comentario": null,
       "area_corta": "SUIIT"
     },
@@ -420,10 +438,10 @@
       "siaf": null,
       "fecha_contrato": null,
       "monto": null,
-      "dependencia": "SOPORTE INFORMATICO",
-      "usuario": "MORI GUILLEN EDUARDO",
-      "fecha_atencion": "2026-02-16",
-      "estado": "SIN ESTADO",
+      "dependencia": "ADQUISICIONES - PEREZ MEDRANO ANDRES OMAR",
+      "usuario": "PEREZ MEDRANO ANDRES OMAR",
+      "fecha_atencion": "2026-03-31",
+      "estado": "EN PROCESO",
       "comentario": "SE ENVIO CORREO DE FECHA 03.03.2026",
       "area_corta": "SUIIT"
     },
@@ -438,11 +456,11 @@
       "siaf": null,
       "fecha_contrato": null,
       "monto": null,
-      "dependencia": "ADQUISICIONES",
+      "dependencia": "ADQUISICIONES - NOLE RETAMOZO HENRY DANIEL",
       "usuario": "NOLE RETAMOZO HENRY DANIEL",
-      "fecha_atencion": "2026-03-19",
+      "fecha_atencion": "2026-03-27",
       "estado": "EN PROCESO",
-      "comentario": "Indagación del mercado hasta el 25/03/2026",
+      "comentario": "Indagación del mercado hasta el 30/03/2026",
       "area_corta": "SUIIT"
     },
     {
@@ -456,11 +474,11 @@
       "siaf": null,
       "fecha_contrato": null,
       "monto": null,
-      "dependencia": "SUB UNIDAD DE INVESTIGACION E INNOVACION TECNOLOGICA",
-      "usuario": "MARTINEZ ESTEBAN PEGGY CAROL",
-      "fecha_atencion": "2026-03-25",
+      "dependencia": "ADQUISICIONES - HIDALGO QUISPE JENNY MARGOT",
+      "usuario": "HIDALGO QUISPE JENNY MARGOT",
+      "fecha_atencion": "2026-04-06",
       "estado": "EN PROCESO",
-      "comentario": "PARA VALIDAR AREA USUARIA SOLO SE PRESENTA 1 SOLA COTIZACION MAYOR A 4 UIT DEBE PRESENTAR INFORME DE SUSTENTO DE LA NECESIDAD //Requerimiento  de la contratación del servicio especializado para la elaboración editorial integral del libro de gestión institucional del Instituto Nacional de Salud del Niño San Borja",
+      "comentario": "TDR MODIFICADO",
       "area_corta": "SUIIT"
     },
     {
@@ -474,9 +492,9 @@
       "siaf": null,
       "fecha_contrato": null,
       "monto": null,
-      "dependencia": "PROGRAMACION DE LAS CONTRATACIONES",
-      "usuario": "CONCHA CAMARGO YOHEL EDISON",
-      "fecha_atencion": "2026-03-25",
+      "dependencia": "SUB UNIDAD DE INVESTIGACION E INNOVACION TECNOLOGICA - MARTINEZ ESTEBAN PEGGY CAROL",
+      "usuario": "MARTINEZ ESTEBAN PEGGY CAROL",
+      "fecha_atencion": "2026-04-07",
       "estado": "EN PROCESO",
       "comentario": null,
       "area_corta": "SUIIT"
